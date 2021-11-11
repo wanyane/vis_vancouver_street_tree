@@ -43,6 +43,19 @@ function get_cx(d) {
     return x_offset + cx
 }
 
+function render_branch(start_year, end_year) {
+    data = [170, 186, 202, 218, 234, 250, 266, 282, 298]
+    g.selectAll(".branches")
+     .data(data)
+     .enter().append("line")
+     .style("stroke", "#663300")
+     .style("stroke-width", 10)
+     .attr("x1", (d)=>{return d})
+     .attr("y1", 360)
+     .attr("x2", (d)=>{return d})
+     .attr("y2", 460)
+}
+
 
 function render(data, cls){
     // init year_index_map
@@ -73,11 +86,6 @@ function create_pie_chart(cx, cy, data_idx) {
         {"continent": "Europe", "cnt": data_month_view[data_idx]["Europe"]},
         {"continent": "North America", "cnt": data_month_view[data_idx]["North America"]}
     ]
-    // var data = [{name: "Alex", share: 20.70}, 
-    //             {name: "Shelly", share: 30.92},
-    //             {name: "Clark", share: 15.42},
-    //             {name: "Matt", share: 13.65},
-    //             {name: "Jolene", share: 19.31}];
 
     var pie = d3.pie().value(function(d) { 
                 return d.cnt; 
@@ -101,8 +109,6 @@ function create_pie_chart(cx, cy, data_idx) {
         .attr('transform', 'translate(' + cx + ',' + cy + ')')
         .style("stroke-width", "0px")
         .attr('fill', function(d){ 
-            console.log(d, d.data.continent)
-            console.log(color)
             return(color(d.data.continent)) })
         .on('click', ()=>{
             g.selectAll(".piechart").remove()
@@ -225,7 +231,7 @@ function switch_to_percentage_view() {
         data_month_view[i]["opacity"] = 0
         data_month_view[i]["visibility"] = "collapse"
     }
-    update(data_month_view, "month_view", 600, get_cx, ()=>400, "#00cc66")
+    update(data_month_view, "month_view", 100, get_cx, ()=>400, "#00cc66")
     
     setTimeout(() => {
         // go back to original position
@@ -233,7 +239,7 @@ function switch_to_percentage_view() {
         setTimeout(() => {
             grow_percentage_tree(data_percentage_view)
         },100);
-    },650);
+    },150);
 }
 
 function switch_view_utility() {
@@ -367,7 +373,7 @@ function main() {
     data_percentage_view = views.data_percentage_view
     
 
-
+    render_branch(0,0)
     render(data_normal_view, "normal_view")
     render(data_month_view, "month_view")
     render(data_percentage_view, "percentage_view")
@@ -382,7 +388,9 @@ on_switch_view_clicked = switch_view_utility()
 on_node_clicked = zoom_in_click_utility()
 const canva = d3.select('.canva')
 const svg = canva.append('svg')
-        .attr('viewBox', [0, 0, 500, 500])
+        .attr('viewBox', [0, 0, 800, 800])
+        .style('background-color', "lightblue")
+        
 const g = svg.append("g")
 
 
