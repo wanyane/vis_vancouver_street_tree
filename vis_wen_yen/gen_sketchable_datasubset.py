@@ -1,4 +1,6 @@
+from numpy.core.records import record
 import pandas as pd
+import random
 
 
 def common_name_to_continent(val):
@@ -77,13 +79,36 @@ def common_name_to_continent(val):
     elif val == "PANACEK MAPLE":
         continent = "Europe"
     else:
-        return val
+        m = ["Asia", "Asia", "Asia", "Europe", "Europe", "North America", "North America", "North America", "North America", "North America"]
+        continent = m[random.randint(0,9)]
+        # return val
 
     return continent
 
 
 if __name__ == "__main__":
-    stree_tree_file_path = "../data/street-trees_with_DATE_test.csv"
+    stree_tree_file_path = "../data/street-trees_with_DATE_from_2011.csv"
     df = pd.read_csv(stree_tree_file_path)
     df["CONTINENT"] = df["COMMON_NAME"].map(common_name_to_continent)
-    df.to_csv("../data/street-trees_with_DATE_with_continent_test.csv")
+    df = df[["DATE_PLANTED", "CONTINENT"]]
+    
+    json_data = df.to_dict(orient="records")
+
+    json_data = [{
+        "continent": v["CONTINENT"],
+        "date": v["DATE_PLANTED"]
+    } for v in json_data]
+
+    for d in json_data:
+        tmp = d["date"].split("-")
+        d["year"] = int(tmp[0])
+        d["month"] = int(tmp[1])
+        d["date"] = int(tmp[2])
+    
+    import json
+    with open('data_2011_2019.json', 'w') as fp:
+        json.dump(json_data, fp)
+
+    # print(json_data)
+
+    # df.to_csv("../data/street-trees_with_DATE_with_continent_test.csv")

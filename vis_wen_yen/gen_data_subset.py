@@ -31,8 +31,8 @@ csv_data = csv_data.loc[
 # csv_data = csv_data.tail(60)
 df = csv_data.sort_values(by="DATE_PLANTED")
 df = df[(df["DATE_PLANTED"] > "2011-01-01")]
-df = df.sample(n=60).sort_values(by="DATE_PLANTED")
+# df = df.sample(n=60).sort_values(by="DATE_PLANTED")
 # df = df.groupby(pd.DatetimeIndex(df.DATE_PLANTED).to_period("Y")).sample(n=2)
-# df.to_csv("../data/street-trees_with_DATE_test.csv")
+df.to_csv("../data/street-trees_with_DATE_from_2011.csv")
 
-print(df)
+print(len(df))

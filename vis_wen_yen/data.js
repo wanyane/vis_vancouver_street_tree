@@ -1,4 +1,4 @@
-let data = [
+let data_normal_view = [
     {
         "continent": "Asia",
         "year": 2011
