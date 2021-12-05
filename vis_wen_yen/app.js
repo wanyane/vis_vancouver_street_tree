@@ -163,10 +163,12 @@ function render_tree(g, data_normal_view, data_bar, leafs_lowest){
             if (e.srcElement.attributes.select.value == "false") {
                 add_to_tree_view_selected_data(d3.select(this).attr("data").split(','))
                 d3.select(this).attr("select", true)
+                d3.select(this).transition().duration('10').attr('opacity', '.5')
             }
             else {
                 delete_from_tree_view_selected_data(d3.select(this).attr("data").split(','))
                 d3.select(this).attr("select", false)
+                d3.select(this).transition().duration('10').attr('opacity', '1')
             }
             pass_data = Array.from(tree_view_selected_data).sort(function(a, b){return a - b})
             console.log(pass_data)
@@ -175,17 +177,20 @@ function render_tree(g, data_normal_view, data_bar, leafs_lowest){
         .on('mouseover', function (e) {
             attrs = e.srcElement.attributes
             continent = attrs.continent.value
-            data_len = attrs.data.value.length
-            data_all_len = attrs.data_all.value.length
+            data_len = attrs.data.value.split(",").length
+            data_all_len = attrs.data_all.value.split(",").length
             d3.select(this).transition().duration('50').attr('opacity', '.5')
-            // d3.select(this).transition().duration('50').attr('opacity', '1')
             txt.transition().duration(100)
                 .attr("opacity", 1)
                 .text(continent + ":" + data_len + "/" + data_all_len)
         }
         )
         .on('mouseout', function (d, i) {
-            d3.select(this).transition().duration('50').attr('opacity', '1')
+            if (d3.select(this).attr("select") == "false") {
+                d3.select(this).transition().duration('50').attr('opacity', '1')
+            } else {
+                d3.select(this).transition().duration('50').attr('opacity', '0.5')
+            }
             txt.transition().duration('50').attr("opacity", 0)
         }
         )
