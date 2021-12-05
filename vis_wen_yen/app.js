@@ -374,7 +374,7 @@ function test(n) {
     
     nums_a = Array.from(nums).sort(function(a, b){return a - b})
     
-    main(nums_a)
+    render_view1(nums_a)
 }
 
 
