@@ -1,18 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <style>
+        .tag {
+            /* position: absolute; */
+            text-align: center;
+            padding: .5rem;
+            background: #FFFFFF;
+            color: #088ee2;
+            border: 1px solid #313639;
+            border-radius: 8px;
+            pointer-events: none;
+            font-size: 1rem;
+        }
+    </style>
     <title>Vis_Wen_Yen</title>
     <meta charset="UTF-8">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     
 </head>
 <body>
-    <button onclick="delete_tree()">delete_tree</button>
-    <button onclick="delete_percentage_tree()">delete_percentage_tree</button>
-    <button onclick="on_switch_view_clicked()">switch_view</button>
     <div class="canva"></div>
 </body>
-<script src="data.js"></script>
-<script src="data_2011_2019.js"></script>
+<script src="whole_data.json"></script>
 <script src="app.js"></script>
 </html>

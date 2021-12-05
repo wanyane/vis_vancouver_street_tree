@@ -1,413 +1,381 @@
+const c_green = "#C5E1A5" 
+const c_yellow = "#FFEE58" // Asia
+const c_cyan = "#0097A7"   // Europe
+const c_blue = "#4FC3F7"   // North America
+const c_red = "#F06292"    // South America
+const c_purple = "#9575CD" // Africa
 
-x_offset = 150
-y_offset = 350
 
-year_index_map = {
-    "2011": {"cnt_x": 0, "cnt_y": 0, "dx": -4*2, "dy": 6*2,  "offset_x": 20,  "offset_y": 0},
-    "2012": {"cnt_x": 0, "cnt_y": 0, "dx": -3*2, "dy": 7*2,  "offset_x": 36,  "offset_y": 0},
-    "2013": {"cnt_x": 0, "cnt_y": 0, "dx": -2*2, "dy": 8*2,  "offset_x": 52,  "offset_y": 0},
-    "2014": {"cnt_x": 0, "cnt_y": 0, "dx": -1*2, "dy": 9*2,  "offset_x": 68,  "offset_y": 0},
+
+function range(start, end) {
+    return Array(end - start).fill().map((_, idx) => start + idx)
+}
+
+
+let tree_view_selected_data = new Set()
+function add_to_tree_view_selected_data(data) {
+    for (i=0;i<data.length; i++) {
+        tree_view_selected_data.add(parseInt(data[i]))
+    }
+}
+
+function delete_from_tree_view_selected_data(data) {
+    for (i=0;i<data.length; i++) {
+        tree_view_selected_data.delete(parseInt(data[i]))
+    }
+}
+
+function data_preprocessing(display_data) {
+    const trees_in_node = 200
+    let previous_year = 1989
+    let leaf_index = 0
     
-    "2015": {"cnt_x": 0, "cnt_y": 0, "dx": -0*2, "dy": 10*2, "offset_x": 84,  "offset_y": 0},
-
-    "2016": {"cnt_x": 0, "cnt_y": 0, "dx": 1*2, "dy": 9*2,  "offset_x": 100,  "offset_y": 0},
-    "2017": {"cnt_x": 0, "cnt_y": 0, "dx": 2*2, "dy": 8*2,  "offset_x": 116,  "offset_y": 0},
-    "2018": {"cnt_x": 0, "cnt_y": 0, "dx": 3*2, "dy": 7*2,  "offset_x": 132,  "offset_y": 0},
-    "2019": {"cnt_x": 0, "cnt_y": 0, "dx": 4*2, "dy": 6*2,  "offset_x": 148,  "offset_y": 0},
-};
-
-function continent_to_color(d) {
-   
-    if (d['continent'] == "Asia"){
-        color = "#ff9933"
-    } else if (d['continent'] == "North America") {
-        color = "#3366ff"
-    } else if (d['continent'] == "Europe") {
-        color = "#00cc66"
-    }
-    return color
-}
-
-function get_cy(d, i) {
-    year = d["year"]
-    cy = year_index_map[year]["dy"] * year_index_map[year]["cnt_y"]
-    year_index_map[String(year)]["cnt_y"] += 1
-    return y_offset - cy
-}
-function get_cx(d) {
-    year = d["year"]
-    cx = year_index_map[year]["offset_x"] + 
-    year_index_map[year]["dx"] * year_index_map[year]["cnt_x"]
-    year_index_map[String(year)]["cnt_x"] += 1
+    let as_cnt = 0
+    let eu_cnt = 0
+    let na_cnt = 0
+    let sa_cnt = 0
+    let af_cnt = 0
     
-    return x_offset + cx
-}
-
-function render_branch(start_year, end_year) {
-    data = [170, 186, 202, 218, 234, 250, 266, 282, 298]
-    g.selectAll(".branches")
-     .data(data)
-     .enter().append("line")
-     .style("stroke", "#663300")
-     .style("stroke-width", 10)
-     .attr("x1", (d)=>{return d})
-     .attr("y1", 360)
-     .attr("x2", (d)=>{return d})
-     .attr("y2", 460)
-}
-
-
-function render(data, cls){
-    // init year_index_map
-    for (year in year_index_map) {
-        year_index_map[year]["cnt_x"] = 0
-        year_index_map[year]["cnt_y"] = 0
-    }
-
-    circles =  g.selectAll("."+cls)
-    circles.data(data)
-          .enter().append("circle")
-          .attr('class', cls)
-          .attr('cx', get_cx)
-          .attr('cy', get_cy)
-          .attr('r', 6)
-          .attr('fill', "white")
-          .attr('opacity', (d) => d["opacity"])
-          .attr('visibility', "collapse")
-          .attr('data_idx', (_, i) => i)
-          .on('click', on_node_clicked)
-        //   .attr('stroke', 'black')       
-}
-
-function create_pie_chart(cx, cy, data_idx) {
-    // test pie
-    let data = [
-        {"continent": "Asia", "cnt": data_month_view[data_idx]["Asia"]},
-        {"continent": "Europe", "cnt": data_month_view[data_idx]["Europe"]},
-        {"continent": "North America", "cnt": data_month_view[data_idx]["North America"]}
-    ]
-
-    var pie = d3.pie().value(function(d) { 
-                return d.cnt; 
-    })
-
-    var color = d3.scaleOrdinal()
-                  .domain(data)
-                  .range(["orange", "green", "blue"])
-
-    g.selectAll("piechart")
-        .data(pie(data))
-        .enter()
-        .append('path')
-        .attr('class', 'piechart')
-        .attr('d', d3.arc()
-                    .innerRadius(0)
-                    .outerRadius(6)
-             )
-            
-        .attr("stroke", "white")
-        .attr('transform', 'translate(' + cx + ',' + cy + ')')
-        .style("stroke-width", "0px")
-        .attr('fill', function(d){ 
-            return(color(d.data.continent)) })
-        .on('click', ()=>{
-            g.selectAll(".piechart").remove()
-        })
-}
-
-function zoom_in_click_utility(event) {
-    let static_value = 0    
-    function clicked(event) {
-        // console.log(event, event.srcElement.attributes.data_idx.value)
-        // remove previous piechart
-        g.selectAll(".piechart").remove()
-
-        event.stopPropagation();
-        cx = event.path[0].cx.baseVal.value
-        cy = event.path[0].cy.baseVal.value
-        svg.transition().duration(750).call(
-          zoom.transform,
-          d3.zoomIdentity.translate(250,250).scale(8).translate(-cx, -cy),
-          d3.pointer(event)
-        )
-        // create pie chart
-        
-        data_idx = event.srcElement.attributes.data_idx.value
-        create_pie_chart(cx, cy, data_idx)
-
-        static_value += 1
-      }
-    return clicked
-}
-
-
-
-function update(data, cls, duration, get_cx, get_cy, fill) {
-    // init year_index_map
-    for (year in year_index_map) {
-        year_index_map[year]["cnt_x"] = 0
-        year_index_map[year]["cnt_y"] = 0
-    }
-    circles =  g.selectAll("."+cls)
-    circles.data(data)
-        .transition()
-        .duration(duration)
-        .attr('cx', get_cx)
-        .attr('cy', get_cy)
-        .attr('fill', fill)
-        .attr('opacity', (d) => d["opacity"])
-        .attr('visibility', (d) => d["visibility"])
-}
-
-function grow_tree(data) {
-    i = 0
-    grow = setInterval(() => {
-        // console.log()
-        data[i]["opacity"] = 1
-        data[i]["visibility"] = "visible"
-        update(data, "normal_view", 300, get_cx, get_cy, "#00cc66")
-        i++
-        if (i == data.length) {
-            clearInterval(grow)
-        }
-    }, 100);
-}
-
-function grow_month_tree(data) {
-    i = 0
-    grow = setInterval(() => {
-        data[i]["opacity"] = 0.3+(data[i]["total"]/1000)
-        data[i]["visibility"] = "visible"
-        update(data, "month_view", 300, get_cx, get_cy, "#00cc66")
-        i++
-        if (i == data.length) {
-            clearInterval(grow)
-        }
-    }, 100);
-}
-
-function grow_percentage_tree(data) {
-    for (i=0; i<data.length; i++) {
-        data[i]["opacity"] = 1
-        data[i]["visibility"] = "visible"
-    }
-    update(data, "percentage_view", 1000, get_cx, get_cy, continent_to_color)
-}
-
-function switch_to_normal_view() {
-    for (i=0; i<data_percentage_view.length; i++) {
-        data_percentage_view[i]["opacity"] = 0
-        data_percentage_view[i]["visibility"] = "collapse"
-    }
-    update(data_percentage_view, "percentage_view", 600, get_cx, ()=>400, continent_to_color)
+    let data_normal_view = []
+    let prev_year_total = 0
     
-    setTimeout(() => {
-        // go back to original position
-        update(data_percentage_view, "percentage_view", 10, get_cx, get_cy, continent_to_color)
-        setTimeout(() => {
-            grow_tree(data_normal_view)    
-        },100);
-    },650);
-}
+    // for (i=0; i<data.length; i++) {
+    for (i=0; i<display_data.length; i++) {
+        year = display_data[i].year
 
-function switch_to_month_view() {
-    for (i=0; i<data_normal_view.length; i++) {
-        data_normal_view[i]["opacity"] = 0
-        data_normal_view[i]["visibility"] = "collapse"
-    }
-    update(data_normal_view, "normal_view", 600, get_cx, ()=>400, "#00cc66")
-    
-    setTimeout(() => {
-        // go back to original position
-        update(data_normal_view, "normal_view", 10, get_cx, get_cy, "#00cc66")
-        setTimeout(() => {
-            grow_month_tree(data_month_view)    
-        },100);
-    },650);
-}
-
-function switch_to_percentage_view() {
-    for (i=0; i<data_month_view.length; i++) {
-        data_month_view[i]["opacity"] = 0
-        data_month_view[i]["visibility"] = "collapse"
-    }
-    update(data_month_view, "month_view", 100, get_cx, ()=>400, "#00cc66")
-    
-    setTimeout(() => {
-        // go back to original position
-        update(data_month_view, "month_view", 10, get_cx, get_cy, "#00cc66")
-        setTimeout(() => {
-            grow_percentage_tree(data_percentage_view)
-        },100);
-    },150);
-}
-
-function switch_view_utility() {
-    let static_value = 0
-    function on_switch_view_clicked() {
-        static_value += 1
-        if (static_value % 3 == 0) { //switch to normal view
-            switch_to_normal_view()
-
-        } else if (static_value % 3 == 1) {
-            switch_to_month_view()
-        } else { //switch to percentage view
-            switch_to_percentage_view()
-        }
-        
-    }
-    return on_switch_view_clicked
-}
-
-function data_preprocessing() {
-    statistics = {}
-    for (y=2011; y<=2019; y++) {
-        statistics[String(y)] = {}
-        statistics[String(y)]["year_total"] = 0
-        for (m=1; m<=12; m++) {
-            statistics[String(y)][String(m)] = {
-                "Asia": 0,
-                "Europe": 0,
-                "North America": 0,
-                "total": 0,
+        if ((i-prev_year_total) % trees_in_node == 0 || year != previous_year){
+            if (year != previous_year) {
+                leaf_index = 0
+                previous_year += 1
+                prev_year_total = i
             }
-        }
-    }
-    
-    for (i=0; i<data.length; i++) {
-        year = data[i].year
-        month = data[i].month
-        continent = data[i].continent
-        statistics[String(year)][String(month)][String(continent)] += 1
-        statistics[String(year)][String(month)]["total"] += 1
-        statistics[String(year)]["year_total"] += 1
-    }
-    console.log(statistics)
-
-    // calculate data_normal_view
-    data_normal_view = []
-    for (y=2011; y<=2019; y++) {
-        leaf_cnt = Math.ceil(statistics[String(y)]["year_total"] / 500)
-        for (leaf=1; leaf<=leaf_cnt; leaf++) {
             data_normal_view.push({
-                "year": y,
-                "opacity": 0
+                "year": year,
+                "leaf_idx": leaf_index,
+                "data": [],
+                "continent_portion":{
+                    "as": as_cnt,
+                    "eu": eu_cnt,
+                    "na": na_cnt,
+                    "sa": sa_cnt,
+                    "af": af_cnt,    
+                },
             })
+            leaf_index += 1
         }
-    }
-    // console.log(data_normal_view)
 
-    // calculate data_normal_view
-    data_month_view = []
-    for (y=2011; y<=2019; y++) {
-        for (m=1; m<=12; m++) {
-            data_month_view.push({
-                "year": y,
-                "Asia": statistics[String(y)][String(m)]["Asia"],
-                "Europe": statistics[String(y)][String(m)]["Europe"],
-                "North America": statistics[String(y)][String(m)]["North America"],
-                "total": statistics[String(y)][String(m)]["total"],
-                "opacity": 0
-            })
+        data_normal_view[data_normal_view.length-1]["data"].push(i)
+        
+        if (display_data[i].continent == "Asia"){
+            data_normal_view[data_normal_view.length-1]["continent_portion"]["as"] += 1
         }
-    }
-
-    console.log(data_month_view)
-
-    // calculate data_percentage_view
-    data_percentage_view = []
-    num_of_leaves_each_tree = 10
-    for (y=2011; y<=2019; y++) {
-        total = 0
-        asia = 0
-        europe = 0
-        na = 0
-        for (m=1; m<=12; m++) {
-            total += statistics[String(y)][String(m)]["total"]
-            asia += statistics[String(y)][String(m)]["Asia"]
-            europe += statistics[String(y)][String(m)]["Europe"]
-            na += statistics[String(y)][String(m)]["North America"]
+        if (display_data[i].continent == "Europe"){
+            data_normal_view[data_normal_view.length-1]["continent_portion"]["eu"] += 1
+        }
+        if (display_data[i].continent == "North America"){
+            data_normal_view[data_normal_view.length-1]["continent_portion"]["na"] += 1
+        }
+        if (display_data[i].continent == "South America"){
+            data_normal_view[data_normal_view.length-1]["continent_portion"]["sa"] += 1
+        }
+        if (display_data[i].continent == "Africa"){
+            data_normal_view[data_normal_view.length-1]["continent_portion"]["af"] += 1
         }
         
-        asia_norm =  Math.round(asia / total * num_of_leaves_each_tree)
-        europe_norm = Math.round(europe / total * num_of_leaves_each_tree)
-        na_norm = Math.round(na / total * num_of_leaves_each_tree)
+    }
+    // cx, cy, r
+    // data_normal_view = data_normal_view.slice(0,10)
+    const x_offset = 350
+    const y_offset = 400
+    for (i=0;i<data_normal_view.length; i++) {
+        year = data_normal_view[i].year
+        leaf_idx = data_normal_view[i].leaf_idx
+        radius = (30+(2019-year)*4)*Math.PI/180
+        data_normal_view[i]["cx"] = x_offset+(150+leaf_idx*10)*Math.cos(radius)
+        data_normal_view[i]["cy"] = y_offset - (100+leaf_idx*6)*Math.sin(radius)
+        data_normal_view[i]["r"] = 3
+        if (leaf_idx==0){
+            data_normal_view[i]["pre_cx"] = x_offset+(120)*Math.cos(radius)
+            data_normal_view[i]["pre_cy"] = 350
+        } else {
+            data_normal_view[i]["pre_cx"] = data_normal_view[i-1]["cx"]
+            data_normal_view[i]["pre_cy"] = data_normal_view[i-1]["cy"]
+        }
+    }
 
-        for (i=0;i<asia_norm;i++) {
-            data_percentage_view.push({
-                "year": y,
-                "continent": "Asia",
-                "opacity": 0
-            })
-        }
-        
-        for (i;i<asia_norm + europe_norm;i++) {
-            data_percentage_view.push({
-                "year": y,
-                "continent": "Europe",
-                "opacity": 0
-            })
-        }
-        
-        for (i;i<num_of_leaves_each_tree;i++) {
-            data_percentage_view.push({
-                "year": y,
-                "continent": "North America",
-                "opacity": 0
-            })
-        }
-    }
-    return {
-        "data_normal_view": data_normal_view,
-        "data_month_view": data_month_view,
-        "data_percentage_view": data_percentage_view
-    }
+    return data_normal_view
 
 }
 
-function main() {
+function render_tree(g, data_normal_view, data_bar, leafs_lowest){
+    circles =  g.selectAll()
+    circles.data(data_normal_view)
+          .enter().append("circle")
+        //   .attr('class', cls)
+          .attr('cx', (d)=>d.cx)
+          .attr('cy', (d)=>d.cy)
+          .attr('r', (d)=>d.r)
+          .attr('fill', c_green)
+          .attr("data", (d)=>d.data)
+          .attr("continent_portion_as", (d)=>d.continent_portion["as"])
+          .attr("continent_portion_eu", (d)=>d.continent_portion["eu"])
+          .attr("continent_portion_na", (d)=>d.continent_portion["na"])
+          .attr("continent_portion_sa", (d)=>d.continent_portion["sa"])
+          .attr("continent_portion_af", (d)=>d.continent_portion["af"])
+          .on('click', (e)=>{console.log(e.srcElement.attributes.data.value)})
+          //Our new hover effects
+        //   .attr('transform', 'translate(0, 0)')
+          .on('mouseover', function (e) {
+                as_cnt = e.srcElement.attributes.continent_portion_as.value
+                eu_cnt = e.srcElement.attributes.continent_portion_eu.value
+                na_cnt = e.srcElement.attributes.continent_portion_na.value
+                sa_cnt = e.srcElement.attributes.continent_portion_sa.value
+                af_cnt = e.srcElement.attributes.continent_portion_af.value
 
-    views = data_preprocessing()
-    data_normal_view = views.data_normal_view
-    data_month_view = views.data_month_view
-    data_percentage_view = views.data_percentage_view
-    
+                d3.select(this).transition().duration('50').attr('opacity', '.85')
+                txt.transition().duration(100)
+                    .attr("opacity", 1)
+                    .text("Asia: " + as_cnt + ", Europe: " + eu_cnt + ", North America: " + na_cnt + ", Sourth America: " + sa_cnt + ", Africa: " + af_cnt)
+            }
+          )
+          .on('mouseout', function (d, i) {
+                d3.select(this).transition().duration('50').attr('opacity', '1')
+                txt.transition().duration('50').attr("opacity", 0)
+            }
+          )
 
-    render_branch(0,0)
-    render(data_normal_view, "normal_view")
-    render(data_month_view, "month_view")
-    render(data_percentage_view, "percentage_view")
-    setTimeout(() => {
-        grow_tree(data_normal_view)
-    }, 1000);
-    
-    
 
+    bar = g.selectAll()
+    bar.data(data_bar)
+        .enter().append('line')
+        .style("stroke", (d)=>{return d.stroke})
+        .style("stroke-width", 3)
+        .attr("x1", (d)=>{return d.x1})
+        .attr("y1", (d)=>{return d.y1})
+        .attr("x2", (d)=>{return d.x2})
+        .attr("y2", (d)=>{return d.y2})
+        .attr("data", (d)=>{return d.data})
+        .attr("continent", (d)=>{return d.continent})
+        .attr("data_all", (d)=>{return d.data_all})
+        .attr("select", false)
+        .on('click', function(e) {
+            // console.log(d3.select(this).attr("data"))
+            if (e.srcElement.attributes.select.value == "false") {
+                add_to_tree_view_selected_data(d3.select(this).attr("data").split(','))
+                d3.select(this).attr("select", true)
+            }
+            else {
+                delete_from_tree_view_selected_data(d3.select(this).attr("data").split(','))
+                d3.select(this).attr("select", false)
+            }
+            pass_data = Array.from(tree_view_selected_data).sort(function(a, b){return a - b})
+            console.log(pass_data)
+         }
+        )
+        .on('mouseover', function (e) {
+            attrs = e.srcElement.attributes
+            continent = attrs.continent.value
+            data_len = attrs.data.value.length
+            data_all_len = attrs.data_all.value.length
+            d3.select(this).transition().duration('50').attr('opacity', '.5')
+            // d3.select(this).transition().duration('50').attr('opacity', '1')
+            txt.transition().duration(100)
+                .attr("opacity", 1)
+                .text(continent + ":" + data_len + "/" + data_all_len)
+        }
+        )
+        .on('mouseout', function (d, i) {
+            d3.select(this).transition().duration('50').attr('opacity', '1')
+            txt.transition().duration('50').attr("opacity", 0)
+        }
+        )
+
+    link = g.selectAll()
+    link.data(leafs_lowest)
+        .enter().append('line')
+        .style("stroke", "#A1887F")
+        .style("stroke-width", 1)
+        .attr("x1", (d)=>{return d.pre_cx})
+        .attr("y1", (d)=>{return d.pre_cy})
+        .attr("x2", (d)=>{return d.cx})
+        .attr("y2", (d)=>{return d.cy});
+
+    txt = g.selectAll().data([123]).enter().append("text")
+    txt.attr('x', 250)
+        .attr('y', 500)
+        .attr("dy", ".35em")
+        .attr("fill", "#FFFFFF")
+        .attr('opacity', 0)
+        .text("Asia: " + 10 + "na: ")
 }
-on_switch_view_clicked = switch_view_utility()
-on_node_clicked = zoom_in_click_utility()
+
+function get_trunk_data(display_data, data_normal_view){
+    let bar_data = []
+    let statistic = {}
+    let min_y = 3000
+    let max_y = 0
+    for (i=0; i<display_data.length; i++) {
+        if (display_data[i].year <min_y) {
+            min_y = display_data[i].year
+        }
+        if (display_data[i].year > max_y) {
+            max_y = display_data[i].year
+        }
+    }
+    for (y=min_y;y<=max_y;y++) {
+        statistic[String(y)] = {
+            "as": [],
+            "eu": [],
+            "na": [],
+            "sa": [],
+            "af": [],
+            "all": []
+        }
+    }
+    for (i=0;i<display_data.length;i++){
+        let year = display_data[i].year
+        let continent = display_data[i].continent
+        
+        statistic[String(year)]["all"].push(i)
+        
+        if (continent=="Asia") {
+            statistic[String(year)]["as"].push(i)
+        } else if (continent=="Europe") {
+            statistic[String(year)]["eu"].push(i)
+        } else if (continent=="North America") {
+            statistic[String(year)]["na"].push(i)
+        } else if (continent=="South America") {
+            statistic[String(year)]["sa"].push(i)
+        } else {
+            statistic[String(year)]["af"].push(i)
+        }
+    }
+    
+    const bar_len = 120
+    let leafs_lowest = data_normal_view.filter(function(d){ return d.leaf_idx === 0})
+    for (const y in statistic) {
+        let ratio = 0
+        let all_len = statistic[String(y)]["all"].length
+        let as_ratio = statistic[String(y)]["as"].length/all_len || 0
+        let eu_ratio = statistic[String(y)]["eu"].length/all_len || 0
+        let na_ratio = statistic[String(y)]["na"].length/all_len || 0
+        let sa_ratio = statistic[String(y)]["sa"].length/all_len || 0
+        let af_ratio = statistic[String(y)]["af"].length/all_len || 0
+        
+        // bar_data.push({
+        //     "x1": leafs_lowest[y-1990].pre_cx,
+        //     "y1": leafs_lowest[y-1990].pre_cy,
+        //     "x2": leafs_lowest[y-1990].pre_cx,
+        //     "y2": leafs_lowest[y-1990].pre_cy+bar_len, 
+        //     "data": statistic[String(y)]["all"]
+        // })
+        // as
+        ratio = 0
+        next_ratio = as_ratio
+        bar_data.push({
+            "x1": leafs_lowest[y-1990].pre_cx,
+            "y1": leafs_lowest[y-1990].pre_cy + ratio*bar_len,
+            "x2": leafs_lowest[y-1990].pre_cx,
+            "y2": leafs_lowest[y-1990].pre_cy + next_ratio*bar_len, 
+            "data": statistic[String(y)]["as"],
+            "continent": "Asia",
+            "data_all": statistic[String(y)]["all"],
+            "stroke": c_yellow
+            
+        })
+        
+        // eu
+        ratio = next_ratio
+        next_ratio += eu_ratio
+        bar_data.push({
+            "x1": leafs_lowest[y-1990].pre_cx,
+            "y1": leafs_lowest[y-1990].pre_cy + ratio*bar_len,
+            "x2": leafs_lowest[y-1990].pre_cx,
+            "y2": leafs_lowest[y-1990].pre_cy + + next_ratio*bar_len, 
+            "data": statistic[String(y)]["eu"],
+            "continent": "Europe",
+            "data_all": statistic[String(y)]["all"],
+            "stroke": c_cyan
+        })
+        // na
+        ratio = next_ratio
+        next_ratio += na_ratio
+        bar_data.push({
+            "x1": leafs_lowest[y-1990].pre_cx,
+            "y1": leafs_lowest[y-1990].pre_cy + ratio*bar_len,
+            "x2": leafs_lowest[y-1990].pre_cx,
+            "y2": leafs_lowest[y-1990].pre_cy+ next_ratio*bar_len, 
+            "data": statistic[String(y)]["na"],
+            "continent": "North America",
+            "data_all": statistic[String(y)]["all"],
+            "stroke": c_blue
+        })
+        // sa
+        ratio = next_ratio
+        next_ratio += sa_ratio
+        bar_data.push({
+            "x1": leafs_lowest[y-1990].pre_cx,
+            "y1": leafs_lowest[y-1990].pre_cy + ratio*bar_len,
+            "x2": leafs_lowest[y-1990].pre_cx,
+            "y2": leafs_lowest[y-1990].pre_cy + next_ratio*bar_len, 
+            "data": statistic[String(y)]["sa"],
+            "continent": "South America",
+            "data_all": statistic[String(y)]["all"],
+            "stroke": c_red
+        })
+        // af
+        ratio = next_ratio
+        next_ratio += af_ratio
+        bar_data.push({
+            "x1": leafs_lowest[y-1990].pre_cx,
+            "y1": leafs_lowest[y-1990].pre_cy + ratio*bar_len,
+            "x2": leafs_lowest[y-1990].pre_cx,
+            "y2": leafs_lowest[y-1990].pre_cy + next_ratio*bar_len, 
+            "data": statistic[String(y)]["af"],
+            "continent": "Africa",
+            "data_all": statistic[String(y)]["all"],
+            "stroke": c_purple
+        })
+    }
+    return bar_data
+    
+    
+}
+
+
 const canva = d3.select('.canva')
 const svg = canva.append('svg')
-        .attr('viewBox', [0, 0, 800, 800])
-        .style('background-color', "lightblue")
-        
-const g = svg.append("g")
+                 .attr('viewBox', [0, 0, 800, 800])
+                 .style('background-color', "#424242")
+                 
+function render_view1(indexes){
+    let display_data = indexes.map(i => data[i])
+    let data_normal_view = data_preprocessing(display_data)
+    let data_bar = get_trunk_data(display_data, data_normal_view)
+    let leafs_lowest = data_normal_view.filter(function(d){ return d.leaf_idx === 0})
+    
+    // remove g
+    svg.selectAll(".grp").remove()
 
-
-// zoom
-const zoom = d3.zoom()
-      .scaleExtent([1, 40])
-      .on("zoom", zoomed);
-
-function zoomed({transform}) {
-g.attr("transform", transform);
+    // create g
+    const g = svg.append("g").attr("class", "grp")
+    
+    // render
+    render_tree(g, data_normal_view, data_bar, leafs_lowest)
+    
 }
 
-svg.call(d3.zoom()
-      .extent([[300, 300], [400, 400]])
-      .scaleExtent([1, 40])
-      .on("zoom", zoomed));
-// 
+function test(n) {
 
-main()
-// data_preprocessing()
+    const nums = new Set();
+    while(nums.size !== n) {
+        nums.add(Math.floor(Math.random() * 40000) + 1);
+    }
+    
+    nums_a = Array.from(nums).sort(function(a, b){return a - b})
+    
+    main(nums_a)
+}
+
+
+render_view1(range(0, data.length))
