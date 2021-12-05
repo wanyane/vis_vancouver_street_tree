@@ -90,6 +90,7 @@ if __name__ == "__main__":
         "civic_number": v["CIVIC_NUMBER"],
         "std_street": v["STD_STREET"],
         "common_name": v["COMMON_NAME"],
+        "genus_name": v["GENUS_NAME"],
         "assigned": v["ASSIGNED"],
         "root_barrier": v["ROOT_BARRIER"],
         "plant_area": v["PLANT_AREA"],
