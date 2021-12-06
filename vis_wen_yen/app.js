@@ -266,6 +266,7 @@ function get_trunk_data(display_data, data_normal_view){
             "all": []
         }
     }
+    console.log(display_data);
     for (i=0;i<display_data.length;i++){
         let year = display_data[i].year
         let continent = display_data[i].continent
@@ -304,6 +305,8 @@ function get_trunk_data(display_data, data_normal_view){
         //     "data": statistic[String(y)]["all"]
         // })
         // as
+        // console.log(y);
+        // console.log(leafs_lowest);
         ratio = 0
         next_ratio = as_ratio
         let y_idx = 0
@@ -313,70 +316,80 @@ function get_trunk_data(display_data, data_normal_view){
                 break
             }
         }
-        bar_data.push({
-            "x1": leafs_lowest[y_idx].pre_cx,
-            "y1": leafs_lowest[y_idx].pre_cy + ratio*bar_len,
-            "x2": leafs_lowest[y_idx].pre_cx,
-            "y2": leafs_lowest[y_idx].pre_cy + next_ratio*bar_len,
-            "data": statistic[String(y)]["as"],
-            "continent": "Asia",
-            "data_all": statistic[String(y)]["all"],
-            "stroke": c_yellow
-
-        })
+        if (leafs_lowest[y_idx]) {
+            bar_data.push({
+                "x1": leafs_lowest[y_idx].pre_cx,
+                "y1": leafs_lowest[y_idx].pre_cy + ratio*bar_len,
+                "x2": leafs_lowest[y_idx].pre_cx,
+                "y2": leafs_lowest[y_idx].pre_cy + next_ratio*bar_len,
+                "data": statistic[String(y)]["as"],
+                "continent": "Asia",
+                "data_all": statistic[String(y)]["all"],
+                "stroke": c_yellow
+    
+                })
+        }
 
         // eu
         ratio = next_ratio
         next_ratio += eu_ratio
-        bar_data.push({
-            "x1": leafs_lowest[y_idx].pre_cx,
-            "y1": leafs_lowest[y_idx].pre_cy + ratio*bar_len,
-            "x2": leafs_lowest[y_idx].pre_cx,
-            "y2": leafs_lowest[y_idx].pre_cy + + next_ratio*bar_len,
-            "data": statistic[String(y)]["eu"],
-            "continent": "Europe",
-            "data_all": statistic[String(y)]["all"],
-            "stroke": c_cyan
-        })
+        if (leafs_lowest[y_idx]) {
+            bar_data.push({
+                "x1": leafs_lowest[y_idx].pre_cx,
+                "y1": leafs_lowest[y_idx].pre_cy + ratio*bar_len,
+                "x2": leafs_lowest[y_idx].pre_cx,
+                "y2": leafs_lowest[y_idx].pre_cy + + next_ratio*bar_len,
+                "data": statistic[String(y)]["eu"],
+                "continent": "Europe",
+                "data_all": statistic[String(y)]["all"],
+                "stroke": c_cyan
+            })
+        }
         // na
         ratio = next_ratio
         next_ratio += na_ratio
-        bar_data.push({
-            "x1": leafs_lowest[y_idx].pre_cx,
-            "y1": leafs_lowest[y_idx].pre_cy + ratio*bar_len,
-            "x2": leafs_lowest[y_idx].pre_cx,
-            "y2": leafs_lowest[y_idx].pre_cy+ next_ratio*bar_len,
-            "data": statistic[String(y)]["na"],
-            "continent": "North America",
-            "data_all": statistic[String(y)]["all"],
-            "stroke": c_blue
-        })
+        if (leafs_lowest[y_idx]) {
+            bar_data.push({
+                "x1": leafs_lowest[y_idx].pre_cx,
+                "y1": leafs_lowest[y_idx].pre_cy + ratio*bar_len,
+                "x2": leafs_lowest[y_idx].pre_cx,
+                "y2": leafs_lowest[y_idx].pre_cy+ next_ratio*bar_len,
+                "data": statistic[String(y)]["na"],
+                "continent": "North America",
+                "data_all": statistic[String(y)]["all"],
+                "stroke": c_blue
+            })
+        }
         // sa
         ratio = next_ratio
         next_ratio += sa_ratio
-        bar_data.push({
-            "x1": leafs_lowest[y_idx].pre_cx,
-            "y1": leafs_lowest[y_idx].pre_cy + ratio*bar_len,
-            "x2": leafs_lowest[y_idx].pre_cx,
-            "y2": leafs_lowest[y_idx].pre_cy + next_ratio*bar_len,
-            "data": statistic[String(y)]["sa"],
-            "continent": "South America",
-            "data_all": statistic[String(y)]["all"],
-            "stroke": c_red
-        })
+        if (leafs_lowest[y_idx]) {
+            bar_data.push({
+                "x1": leafs_lowest[y_idx].pre_cx,
+                "y1": leafs_lowest[y_idx].pre_cy + ratio*bar_len,
+                "x2": leafs_lowest[y_idx].pre_cx,
+                "y2": leafs_lowest[y_idx].pre_cy + next_ratio*bar_len,
+                "data": statistic[String(y)]["sa"],
+                "continent": "South America",
+                "data_all": statistic[String(y)]["all"],
+                "stroke": c_red
+            })
+        }
         // af
         ratio = next_ratio
         next_ratio += af_ratio
-        bar_data.push({
-            "x1": leafs_lowest[y_idx].pre_cx,
-            "y1": leafs_lowest[y_idx].pre_cy + ratio*bar_len,
-            "x2": leafs_lowest[y_idx].pre_cx,
-            "y2": leafs_lowest[y_idx].pre_cy + next_ratio*bar_len,
-            "data": statistic[String(y)]["af"],
-            "continent": "Africa",
-            "data_all": statistic[String(y)]["all"],
-            "stroke": c_purple
-        })
+        if (leafs_lowest[y_idx]) {
+            bar_data.push({
+                "x1": leafs_lowest[y_idx].pre_cx,
+                "y1": leafs_lowest[y_idx].pre_cy + ratio*bar_len,
+                "x2": leafs_lowest[y_idx].pre_cx,
+                "y2": leafs_lowest[y_idx].pre_cy + next_ratio*bar_len,
+                "data": statistic[String(y)]["af"],
+                "continent": "Africa",
+                "data_all": statistic[String(y)]["all"],
+                "stroke": c_purple
+            })
+        }
     }
     return bar_data
 
