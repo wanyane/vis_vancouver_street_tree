@@ -1,4 +1,4 @@
-const c_green = "#C5E1A5" 
+const c_green = "#C5E1A5"
 const c_yellow = "#FFEE58" // Asia
 const c_cyan = "#0097A7"   // Europe
 const c_blue = "#4FC3F7"   // North America
@@ -29,16 +29,16 @@ function data_preprocessing(display_data) {
     const trees_in_node = 200
     let previous_year = 1989
     let leaf_index = 0
-    
+
     let as_cnt = 0
     let eu_cnt = 0
     let na_cnt = 0
     let sa_cnt = 0
     let af_cnt = 0
-    
+
     let data_normal_view = []
     let prev_year_total = 0
-    
+
     // for (i=0; i<data.length; i++) {
     for (i=0; i<display_data.length; i++) {
         year = display_data[i].year
@@ -58,14 +58,14 @@ function data_preprocessing(display_data) {
                     "eu": eu_cnt,
                     "na": na_cnt,
                     "sa": sa_cnt,
-                    "af": af_cnt,    
+                    "af": af_cnt,
                 },
             })
             leaf_index += 1
         }
 
         data_normal_view[data_normal_view.length-1]["data"].push(i)
-        
+
         if (display_data[i].continent == "Asia"){
             data_normal_view[data_normal_view.length-1]["continent_portion"]["as"] += 1
         }
@@ -81,7 +81,7 @@ function data_preprocessing(display_data) {
         if (display_data[i].continent == "Africa"){
             data_normal_view[data_normal_view.length-1]["continent_portion"]["af"] += 1
         }
-        
+
     }
     // cx, cy, r
     // data_normal_view = data_normal_view.slice(0,10)
@@ -171,7 +171,9 @@ function render_tree(g, data_normal_view, data_bar, leafs_lowest){
                 d3.select(this).transition().duration('10').attr('opacity', '1')
             }
             pass_data = Array.from(tree_view_selected_data).sort(function(a, b){return a - b})
-            console.log(pass_data)
+            test = pass_data.map(i => data[i])
+            console.log(test)
+            draw_some(pass_data)
          }
         )
         .on('mouseover', function (e) {
@@ -240,9 +242,9 @@ function get_trunk_data(display_data, data_normal_view){
     for (i=0;i<display_data.length;i++){
         let year = display_data[i].year
         let continent = display_data[i].continent
-        
+
         statistic[String(year)]["all"].push(i)
-        
+
         if (continent=="Asia") {
             statistic[String(year)]["as"].push(i)
         } else if (continent=="Europe") {
@@ -255,7 +257,7 @@ function get_trunk_data(display_data, data_normal_view){
             statistic[String(year)]["af"].push(i)
         }
     }
-    
+
     const bar_len = 120
     let leafs_lowest = data_normal_view.filter(function(d){ return d.leaf_idx === 0})
     for (const y in statistic) {
@@ -266,12 +268,12 @@ function get_trunk_data(display_data, data_normal_view){
         let na_ratio = statistic[String(y)]["na"].length/all_len || 0
         let sa_ratio = statistic[String(y)]["sa"].length/all_len || 0
         let af_ratio = statistic[String(y)]["af"].length/all_len || 0
-        
+
         // bar_data.push({
         //     "x1": leafs_lowest[y-1990].pre_cx,
         //     "y1": leafs_lowest[y-1990].pre_cy,
         //     "x2": leafs_lowest[y-1990].pre_cx,
-        //     "y2": leafs_lowest[y-1990].pre_cy+bar_len, 
+        //     "y2": leafs_lowest[y-1990].pre_cy+bar_len,
         //     "data": statistic[String(y)]["all"]
         // })
         // as
@@ -281,14 +283,14 @@ function get_trunk_data(display_data, data_normal_view){
             "x1": leafs_lowest[y-1990].pre_cx,
             "y1": leafs_lowest[y-1990].pre_cy + ratio*bar_len,
             "x2": leafs_lowest[y-1990].pre_cx,
-            "y2": leafs_lowest[y-1990].pre_cy + next_ratio*bar_len, 
+            "y2": leafs_lowest[y-1990].pre_cy + next_ratio*bar_len,
             "data": statistic[String(y)]["as"],
             "continent": "Asia",
             "data_all": statistic[String(y)]["all"],
             "stroke": c_yellow
-            
+
         })
-        
+
         // eu
         ratio = next_ratio
         next_ratio += eu_ratio
@@ -296,7 +298,7 @@ function get_trunk_data(display_data, data_normal_view){
             "x1": leafs_lowest[y-1990].pre_cx,
             "y1": leafs_lowest[y-1990].pre_cy + ratio*bar_len,
             "x2": leafs_lowest[y-1990].pre_cx,
-            "y2": leafs_lowest[y-1990].pre_cy + + next_ratio*bar_len, 
+            "y2": leafs_lowest[y-1990].pre_cy + + next_ratio*bar_len,
             "data": statistic[String(y)]["eu"],
             "continent": "Europe",
             "data_all": statistic[String(y)]["all"],
@@ -309,7 +311,7 @@ function get_trunk_data(display_data, data_normal_view){
             "x1": leafs_lowest[y-1990].pre_cx,
             "y1": leafs_lowest[y-1990].pre_cy + ratio*bar_len,
             "x2": leafs_lowest[y-1990].pre_cx,
-            "y2": leafs_lowest[y-1990].pre_cy+ next_ratio*bar_len, 
+            "y2": leafs_lowest[y-1990].pre_cy+ next_ratio*bar_len,
             "data": statistic[String(y)]["na"],
             "continent": "North America",
             "data_all": statistic[String(y)]["all"],
@@ -322,7 +324,7 @@ function get_trunk_data(display_data, data_normal_view){
             "x1": leafs_lowest[y-1990].pre_cx,
             "y1": leafs_lowest[y-1990].pre_cy + ratio*bar_len,
             "x2": leafs_lowest[y-1990].pre_cx,
-            "y2": leafs_lowest[y-1990].pre_cy + next_ratio*bar_len, 
+            "y2": leafs_lowest[y-1990].pre_cy + next_ratio*bar_len,
             "data": statistic[String(y)]["sa"],
             "continent": "South America",
             "data_all": statistic[String(y)]["all"],
@@ -335,7 +337,7 @@ function get_trunk_data(display_data, data_normal_view){
             "x1": leafs_lowest[y-1990].pre_cx,
             "y1": leafs_lowest[y-1990].pre_cy + ratio*bar_len,
             "x2": leafs_lowest[y-1990].pre_cx,
-            "y2": leafs_lowest[y-1990].pre_cy + next_ratio*bar_len, 
+            "y2": leafs_lowest[y-1990].pre_cy + next_ratio*bar_len,
             "data": statistic[String(y)]["af"],
             "continent": "Africa",
             "data_all": statistic[String(y)]["all"],
@@ -343,8 +345,8 @@ function get_trunk_data(display_data, data_normal_view){
         })
     }
     return bar_data
-    
-    
+
+
 }
 
 
@@ -352,22 +354,23 @@ const canva = d3.select('.canva')
 const svg = canva.append('svg')
                  .attr('viewBox', [0, 0, 800, 800])
                  .style('background-color', "#424242")
-                 
+
 function render_view1(indexes){
+    tree_view_selected_data = new Set()
     let display_data = indexes.map(i => data[i])
     let data_normal_view = data_preprocessing(display_data)
     let data_bar = get_trunk_data(display_data, data_normal_view)
     let leafs_lowest = data_normal_view.filter(function(d){ return d.leaf_idx === 0})
-    
+
     // remove g
     svg.selectAll(".grp").remove()
 
     // create g
     const g = svg.append("g").attr("class", "grp")
-    
+
     // render
     render_tree(g, data_normal_view, data_bar, leafs_lowest)
-    
+
 }
 
 function test(n) {
@@ -376,9 +379,9 @@ function test(n) {
     while(nums.size !== n) {
         nums.add(Math.floor(Math.random() * 40000) + 1);
     }
-    
+
     nums_a = Array.from(nums).sort(function(a, b){return a - b})
-    
+
     render_view1(nums_a)
 }
 
