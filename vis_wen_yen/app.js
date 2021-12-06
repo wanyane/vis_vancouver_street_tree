@@ -91,11 +91,11 @@ function data_preprocessing(display_data) {
         year = data_normal_view[i].year
         leaf_idx = data_normal_view[i].leaf_idx
         radius = (30+(2019-year)*4)*Math.PI/180
-        data_normal_view[i]["cx"] = x_offset+(280+leaf_idx*40)*Math.cos(radius)
+        data_normal_view[i]["cx"] = x_offset+(260+leaf_idx*24)*Math.cos(radius)
         data_normal_view[i]["cy"] = y_offset - (150+leaf_idx*24)*Math.sin(radius)
-        data_normal_view[i]["r"] = 8
+        data_normal_view[i]["r"] = 6
         if (leaf_idx==0){
-            data_normal_view[i]["pre_cx"] = x_offset+(240)*Math.cos(radius)
+            data_normal_view[i]["pre_cx"] = x_offset+(160)*Math.cos(radius)
             data_normal_view[i]["pre_cy"] = 400
         } else {
             data_normal_view[i]["pre_cx"] = data_normal_view[i-1]["cx"]
@@ -160,7 +160,11 @@ function render_tree(g, data_normal_view, data_bar, leafs_lowest){
             }
           )
           .on('mouseout', function (d, i) {
+            if (d3.select(this).attr("select") == "false") {
                 d3.select(this).transition().duration('50').attr('opacity', '1')
+            } else {
+                d3.select(this).transition().duration('50').attr('opacity', '0.5')
+            }
                 txt.transition().duration('50').attr("opacity", 0)
             }
           )
@@ -170,7 +174,7 @@ function render_tree(g, data_normal_view, data_bar, leafs_lowest){
     bar.data(data_bar)
         .enter().append('line')
         .style("stroke", (d)=>{return d.stroke})
-        .style("stroke-width", 8)
+        .style("stroke-width", 5)
         .attr("x1", (d)=>{return d.x1})
         .attr("y1", (d)=>{return d.y1})
         .attr("x2", (d)=>{return d.x2})
