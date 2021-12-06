@@ -137,7 +137,7 @@ function drawPies(tdata,isTreeid){
         newdata = data;
         var piedata_len=newdata.length;
     }
-    let idx_treeid= check_index(newdata);
+    let idx_treeid= check_index(data);
     var piedata_transfer=new Array(0);
     var piedict=new Array(6);
     var rpiedict=new Array(6);
@@ -192,7 +192,7 @@ function drawPies(tdata,isTreeid){
     }
     var ccolor = d3.scaleOrdinal(ccolorset);
     // var color =d3.schemeCategory10;
-    var outerRadius = 300;
+    var outerRadius = 256;
     var innerRadius = 0;
     var arc = d3.arc()
         .innerRadius(innerRadius)
@@ -246,8 +246,9 @@ function drawPies(tdata,isTreeid){
             let this_group = d3.select(this);
             var labelr=this_group.attr("selector");
             glo_para=piedata_transfer[labelr];
-            render_view1(glo_para);
+            console.log(glo_para);
             draw_some(glo_para);
+            render_view1(glo_para);
             var class1="."+labelr+"1";
             var class2="."+labelr+"2";
             let this_class1 = d3.selectAll(class1);
@@ -297,6 +298,7 @@ function drawPies(tdata,isTreeid){
                         return "translate(" + x + ',' + y + ")"+"rotate("+(-90+(d.startAngle +(d.endAngle - d.startAngle)/2)*180 /Math.PI)+ ")";
                     })
                     .attr("text-anchor","middle")
+                    .attr("fill","white")
                     .text(function(d,i){
                         return tp[i];
                     });
@@ -391,6 +393,7 @@ function drawPies(tdata,isTreeid){
             return "translate(" + x + ',' + y + ")";
         })
         .attr("text-anchor","middle")
+        .attr("fill","white")
         .text(function(d,i){
             return listr[i];
         });
@@ -428,6 +431,7 @@ function drawPies(tdata,isTreeid){
             return "translate(" + x + ',' + y + ")"+"rotate("+(-90+(d.startAngle +(d.endAngle - d.startAngle)/2)*180 /Math.PI)+ ")";
         })
         .attr("text-anchor","middle")
+        .attr("fill","white")
         .text(function(d,i){
             return ctp[i];
         });
