@@ -50,6 +50,7 @@
       }
       $('.layer--psoints').attr("visibility", "visiable");
       render_view1(send_data);
+      reloaddata(send_data);
     }
 
 

@@ -1,8 +1,7 @@
 /**
  * Global Variables
  */
-var glo_para = [2,4];
-
+var glo_para=[];
 /**
  * Load data from a CSV file as JSON objects
  * @param path the location of the CSV file to load
@@ -16,11 +15,17 @@ var glo_para = [2,4];
 //     });
 //
 // }
-function loadData(path){
+function loadData(){
     var isTreeid=false;
     drawPies(data,isTreeid);
 }
-
+function reloaddata(data){
+    var rm_staff1=d3.select("#vis1").selectAll("g");
+    var rm_staff2=d3.select("#vis2").selectAll("g");
+    rm_staff1.remove();
+    rm_staff2.remove();
+    drawPies(data,true);
+}
 
 
 
@@ -92,6 +97,13 @@ function last_check_show(data,length){
     }
     return newdata;
 }
+function original_index(data){
+    var tmp=new Array(0);
+    for(var i=0;i<data.length;i++){
+        tmp.push(i);
+    }
+    return tmp;
+}
 function check_index(data){
     let idx_check=new Array(0);
     for(var idx=0;idx<data.length;idx++){
@@ -99,7 +111,7 @@ function check_index(data){
     }
     return idx_check;
 }
-function drawPies(data,isTreeid){
+function drawPies(tdata,isTreeid){
     let svg = d3.select("#vis1");
     svg.attr("viewBox", `-200, -200, ${$("#vis1").width()}, ${$("#vis1").height()}`);
     var newdata=new Array(0);
@@ -107,16 +119,17 @@ function drawPies(data,isTreeid){
     var height = 600;
 
     if(isTreeid){
-        var piedata_len=glo_para.length;
+        var piedata_len=tdata.length;
         for (var i =0;i<piedata_len;i++)
-            newdata.push(data[glo_para[i]]);
+            newdata.push(data[tdata[i]]);
     }
     else {
 
         newdata = data;
         var piedata_len=newdata.length;
     }
-    let idx_treeid= check_index(newdata)
+    console.log(newdata);
+    let idx_treeid= check_index(newdata);
     var piedata_transfer=new Array(0);
     var piedict=new Array(6);
     var rpiedict=new Array(6);
@@ -221,6 +234,7 @@ function drawPies(data,isTreeid){
             var labelr=this_group.attr("selector");
             glo_para=piedata_transfer[labelr];
             render_view1(glo_para);
+            draw_some(glo_para);
             var class1="."+labelr+"1";
             var class2="."+labelr+"2";
             let this_class1 = d3.selectAll(class1);
@@ -384,6 +398,15 @@ function drawPies(data,isTreeid){
         .attr("d",function(d){
             return arc(d);
         })
+        .on("click",function(d,i){
+            var rm_staff1=d3.select("#vis1").selectAll("g");
+            var rm_staff2=d3.select("#vis2").selectAll("g");
+            rm_staff1.remove();
+            rm_staff2.remove();
+            loadData();
+            render_view1(original_index(data));
+            draw_some(original_index(data));
+            })
     arcs_con.append("text")
         .attr("class","cont")
         .attr("transform",function(d,i){
@@ -396,4 +419,4 @@ function drawPies(data,isTreeid){
             return ctp[i];
         });
 }
-loadData("whole_data.json");
+loadData();

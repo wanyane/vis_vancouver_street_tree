@@ -173,6 +173,7 @@ function render_tree(g, data_normal_view, data_bar, leafs_lowest){
             pass_data = Array.from(tree_view_selected_data).sort(function(a, b){return a - b})
             test = pass_data.map(i => data[i])
             console.log(test)
+            reloaddata(pass_data)
             draw_some(pass_data)
          }
         )
