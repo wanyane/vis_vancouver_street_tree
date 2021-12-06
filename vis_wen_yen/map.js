@@ -30,8 +30,15 @@
       drawn = false;
     }
 
+    let last_send = "";
     function sendID(title) {
-      console.log(title);
+      if (last_send == title) {
+        render_view1([]);  
+        last_send = ""
+        return;
+      }
+      last_send = title
+      
       if (title == "Downtown Eastside"){
         title = "Strathcona";
       }

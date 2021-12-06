@@ -15,13 +15,13 @@ function range(start, end) {
 let tree_view_selected_data = new Set()
 function add_to_tree_view_selected_data(data) {
     for (i=0;i<data.length; i++) {
-        tree_view_selected_data.add(parseInt(data[i]))
+        tree_view_selected_data.add(parseInt(input_indexes[data[i]]))
     }
 }
 
 function delete_from_tree_view_selected_data(data) {
     for (i=0;i<data.length; i++) {
-        tree_view_selected_data.delete(parseInt(data[i]))
+        tree_view_selected_data.delete(parseInt(input_indexes[data[i]]))
     }
 }
 
@@ -221,6 +221,7 @@ function get_trunk_data(display_data, data_normal_view){
     let statistic = {}
     let min_y = 3000
     let max_y = 0
+    console.log(display_data)
     for (i=0; i<display_data.length; i++) {
         if (display_data[i].year <min_y) {
             min_y = display_data[i].year
@@ -352,16 +353,25 @@ function get_trunk_data(display_data, data_normal_view){
 
 const canva = d3.select('.canva')
 const svg = canva.append('svg')
-                 .attr('viewBox', [0, 0, 800, 800])
+                 .attr('viewBox', [0, 0, 800, 600])
                  .style('background-color', "#424242")
 
+
+let input_indexes = []
 function render_view1(indexes){
-    tree_view_selected_data = new Set()
-    let display_data = indexes.map(i => data[i])
+    input_indexes = indexes
+    if (input_indexes.length == 0) {
+        input_indexes = range(0, data.length)
+    }
+
+    let display_data = input_indexes.map(i => data[i])
+    console.log(display_data)
     let data_normal_view = data_preprocessing(display_data)
     let data_bar = get_trunk_data(display_data, data_normal_view)
     let leafs_lowest = data_normal_view.filter(function(d){ return d.leaf_idx === 0})
-
+    
+    tree_view_selected_data = new Set()
+    
     // remove g
     svg.selectAll(".grp").remove()
 
