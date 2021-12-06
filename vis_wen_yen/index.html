@@ -18,6 +18,9 @@
         svg {
           border: 1px solid #ccc;
         }
+        body {
+          background-color: #424242;
+        }
 
         .area_overlay:hover {
           fill: orange;
@@ -28,17 +31,23 @@
       </style>
     <style>
         .large-vis {
-            width: 20%;
-            height: 1000px;
-            min-width: 1000px;
-            margin: 30px 0 0 0;
+            height: 720px;
+            width: 1000px;
+            background-color: #424242;
+            border-color: #424242;
         }
         .vis {
             width: 90%;
             height: fit-content;
             min-height: 500px;
             margin: auto;
-            padding: 10px;
+            padding: 0;
+        }
+        .canva {
+          float: left;
+        }
+        #chart {
+          float: left;
         }
     </style>
     <title>Vis_Wen_Yen</title>
@@ -50,12 +59,12 @@
 </head>
 <body>
     <div class="canva"></div>
+    <div class="vis">
+            <svg class="large-vis" id="vis1"></svg>
+    </div>
     <div id="chart"></div>
     <div class="vis">
-        <div class="center">
-            <svg class="large-vis" id="vis1"></svg>
             <svg class="large-vis" id="vis2"></svg>
-        </div>
     </div>
 </body>
 <script src="jquery-3.3.1.min.js"></script>

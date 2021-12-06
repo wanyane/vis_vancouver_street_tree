@@ -14,7 +14,9 @@
     const box = d3.select('#chart');
     const svg_map = box.append('svg')
       .attr('width', map_width)
-      .attr('height', map_height);
+      .attr('height', map_height)
+      .style('background-color', "#424242")
+      .style('border-color', "#424242");
 
     const g = svg_map.append('g')
       .attr('transform', `translate(${margin.top}, ${margin.left})`);
@@ -33,12 +35,17 @@
     let last_send = "";
     function sendID(title) {
       if (last_send == title) {
-        render_view1([]);  
+        render_view1([]);
+        reloaddata([]);
         last_send = ""
+        if (drawn){
+          remove_some();
+        }
+        $('.layer--psoints').attr("visibility", "visiable");
         return;
       }
       last_send = title
-      
+
       if (title == "Downtown Eastside"){
         title = "Strathcona";
       }
@@ -48,7 +55,8 @@
       if (drawn){
         remove_some();
       }
-      $('.layer--psoints').attr("visibility", "visiable");
+      draw_some(send_data);
+      $('.layer--psoints').attr("visibility", "collapse");
       render_view1(send_data);
       reloaddata(send_data);
     }
@@ -124,15 +132,11 @@
         console.error(e)
       }
 
-      console.log('topo_data', topo_data)
-      console.log('geo_data', geo_data)
 
 
       const geo_border = topojson.merge(topo_data, topo_data.objects.geo.geometries)
-      console.log('geo_border', geo_border)
 
       const geo_interiors = topojson.mesh(topo_data, topo_data.objects.geo, (a, b) => a !== b)
-      console.log('geo_interiors', geo_interiors)
 
 
       projection = d3.geoMercator()
@@ -180,14 +184,14 @@
         .datum(geo_interiors)
         .attr('d', path)
         .attr('fill', 'none')
-        .attr('stroke', 'black')
+        .attr('stroke', 'white')
 
       outline_layer
         .append('path')
         .datum(geo_border)
         .attr('d', path)
         .attr('fill', 'none')
-        .attr('stroke', 'black')
+        .attr('stroke', 'white')
 
 
 

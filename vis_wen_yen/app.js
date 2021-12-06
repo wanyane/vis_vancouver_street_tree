@@ -85,18 +85,18 @@ function data_preprocessing(display_data) {
     }
     // cx, cy, r
     // data_normal_view = data_normal_view.slice(0,10)
-    const x_offset = 350
-    const y_offset = 400
+    const x_offset = 620
+    const y_offset = 450
     for (i=0;i<data_normal_view.length; i++) {
         year = data_normal_view[i].year
         leaf_idx = data_normal_view[i].leaf_idx
         radius = (30+(2019-year)*4)*Math.PI/180
-        data_normal_view[i]["cx"] = x_offset+(150+leaf_idx*10)*Math.cos(radius)
-        data_normal_view[i]["cy"] = y_offset - (100+leaf_idx*6)*Math.sin(radius)
-        data_normal_view[i]["r"] = 3
+        data_normal_view[i]["cx"] = x_offset+(280+leaf_idx*40)*Math.cos(radius)
+        data_normal_view[i]["cy"] = y_offset - (150+leaf_idx*24)*Math.sin(radius)
+        data_normal_view[i]["r"] = 8
         if (leaf_idx==0){
-            data_normal_view[i]["pre_cx"] = x_offset+(120)*Math.cos(radius)
-            data_normal_view[i]["pre_cy"] = 350
+            data_normal_view[i]["pre_cx"] = x_offset+(240)*Math.cos(radius)
+            data_normal_view[i]["pre_cy"] = 400
         } else {
             data_normal_view[i]["pre_cx"] = data_normal_view[i-1]["cx"]
             data_normal_view[i]["pre_cy"] = data_normal_view[i-1]["cy"]
@@ -122,7 +122,28 @@ function render_tree(g, data_normal_view, data_bar, leafs_lowest){
           .attr("continent_portion_na", (d)=>d.continent_portion["na"])
           .attr("continent_portion_sa", (d)=>d.continent_portion["sa"])
           .attr("continent_portion_af", (d)=>d.continent_portion["af"])
-          .on('click', (e)=>{console.log(e.srcElement.attributes.data.value)})
+          //.on('click', (e)=>{console.log(e.srcElement.attributes.data.value)})
+          .attr("select", false)
+          .on('click', function(e) {
+              // console.log(d3.select(this).attr("data"))
+              if (e.srcElement.attributes.select.value == "false") {
+                  add_to_tree_view_selected_data(d3.select(this).attr("data").split(','))
+                  d3.select(this).attr("select", true)
+                  d3.select(this).transition().duration('10').attr('opacity', '.5')
+              }
+              else {
+                  delete_from_tree_view_selected_data(d3.select(this).attr("data").split(','))
+                  d3.select(this).attr("select", false)
+                  d3.select(this).transition().duration('10').attr('opacity', '1')
+              }
+              pass_data = Array.from(tree_view_selected_data).sort(function(a, b){return a - b})
+              if (pass_data.length == 0){
+                render_view1(pass_data)
+              }
+              reloaddata(pass_data)
+              draw_some(pass_data)
+           }
+          )
           //Our new hover effects
         //   .attr('transform', 'translate(0, 0)')
           .on('mouseover', function (e) {
@@ -149,7 +170,7 @@ function render_tree(g, data_normal_view, data_bar, leafs_lowest){
     bar.data(data_bar)
         .enter().append('line')
         .style("stroke", (d)=>{return d.stroke})
-        .style("stroke-width", 3)
+        .style("stroke-width", 8)
         .attr("x1", (d)=>{return d.x1})
         .attr("y1", (d)=>{return d.y1})
         .attr("x2", (d)=>{return d.x2})
@@ -171,8 +192,9 @@ function render_tree(g, data_normal_view, data_bar, leafs_lowest){
                 d3.select(this).transition().duration('10').attr('opacity', '1')
             }
             pass_data = Array.from(tree_view_selected_data).sort(function(a, b){return a - b})
-            test = pass_data.map(i => data[i])
-            console.log(test)
+            if (pass_data.length == 0){
+              render_view1(pass_data)
+            }
             reloaddata(pass_data)
             draw_some(pass_data)
          }
@@ -209,8 +231,8 @@ function render_tree(g, data_normal_view, data_bar, leafs_lowest){
         .attr("y2", (d)=>{return d.cy});
 
     txt = g.selectAll().data([123]).enter().append("text")
-    txt.attr('x', 250)
-        .attr('y', 500)
+    txt.attr('x', 500)
+        .attr('y', 680)
         .attr("dy", ".35em")
         .attr("fill", "#FFFFFF")
         .attr('opacity', 0)
@@ -222,7 +244,6 @@ function get_trunk_data(display_data, data_normal_view){
     let statistic = {}
     let min_y = 3000
     let max_y = 0
-    console.log(display_data)
     for (i=0; i<display_data.length; i++) {
         if (display_data[i].year <min_y) {
             min_y = display_data[i].year
@@ -260,7 +281,7 @@ function get_trunk_data(display_data, data_normal_view){
         }
     }
 
-    const bar_len = 120
+    const bar_len = 240
     let leafs_lowest = data_normal_view.filter(function(d){ return d.leaf_idx === 0})
     for (const y in statistic) {
         let ratio = 0
@@ -354,8 +375,10 @@ function get_trunk_data(display_data, data_normal_view){
 
 const canva = d3.select('.canva')
 const svg = canva.append('svg')
-                 .attr('viewBox', [0, 0, 800, 600])
+                 .attr('width', 1280)
+                 .attr('height', 720)
                  .style('background-color', "#424242")
+                 .style('border-color', "#424242");
 
 
 let input_indexes = []
@@ -364,15 +387,13 @@ function render_view1(indexes){
     if (input_indexes.length == 0) {
         input_indexes = range(0, data.length)
     }
-
     let display_data = input_indexes.map(i => data[i])
-    console.log(display_data)
     let data_normal_view = data_preprocessing(display_data)
     let data_bar = get_trunk_data(display_data, data_normal_view)
     let leafs_lowest = data_normal_view.filter(function(d){ return d.leaf_idx === 0})
-    
+
     tree_view_selected_data = new Set()
-    
+
     // remove g
     svg.selectAll(".grp").remove()
 

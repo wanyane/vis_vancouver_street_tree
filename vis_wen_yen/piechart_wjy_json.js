@@ -19,12 +19,21 @@ function loadData(){
     var isTreeid=false;
     drawPies(data,isTreeid);
 }
-function reloaddata(data){
+function reloaddata(sent_data){
+    console.log(sent_data);
+    if (sent_data.length == 0){
+      var rm_staff1=d3.select("#vis1").selectAll("g");
+      var rm_staff2=d3.select("#vis2").selectAll("g");
+      rm_staff1.remove();
+      rm_staff2.remove();
+      loadData();
+      return;
+    }
     var rm_staff1=d3.select("#vis1").selectAll("g");
     var rm_staff2=d3.select("#vis2").selectAll("g");
     rm_staff1.remove();
     rm_staff2.remove();
-    drawPies(data,true);
+    drawPies(sent_data,true);
 }
 
 
@@ -115,8 +124,8 @@ function drawPies(tdata,isTreeid){
     let svg = d3.select("#vis1");
     svg.attr("viewBox", `-200, -200, ${$("#vis1").width()}, ${$("#vis1").height()}`);
     var newdata=new Array(0);
-    var width = 600;
-    var height = 600;
+    var width = 336;
+    var height = 336;
 
     if(isTreeid){
         var piedata_len=tdata.length;
@@ -128,7 +137,6 @@ function drawPies(tdata,isTreeid){
         newdata = data;
         var piedata_len=newdata.length;
     }
-    console.log(newdata);
     let idx_treeid= check_index(newdata);
     var piedata_transfer=new Array(0);
     var piedict=new Array(6);
@@ -177,7 +185,12 @@ function drawPies(tdata,isTreeid){
 // var colordict={"#7F9488", "#CDC7B4", "#BCCACA", "#BCA885", "#7E5350",
     var color = d3.scaleOrdinal(colorset);
     var gcolorset = ["#B9A4B0","#CBC2D3","#A6ACBC","#97B2B7","#BCCACA","#7F9488","#6F7766","#ACAD98","#CDC7B4","#E1C38B","#BCA885","#EDE4D9","#C28468","#D3C5C0","#BFA59E"];
-
+    var ccolordict= {"North America":"#4FC3F7","South America":"#F06292","Africa":"#9575CD","Asia":"#FFEE58","Europe":"#0097A7"};
+    var ccolorset=new Array(0);
+    for (var key in cpiedict){
+      ccolorset.push(ccolordict[key]);
+    }
+    var ccolor = d3.scaleOrdinal(ccolorset);
     // var color =d3.schemeCategory10;
     var outerRadius = 300;
     var innerRadius = 0;
@@ -393,7 +406,7 @@ function drawPies(tdata,isTreeid){
     arcs_con.append("path")
         .attr("class","cont")
         .attr("fill", function(d,i){
-            return color(i);
+            return ccolor(i);
         })
         .attr("d",function(d){
             return arc(d);
@@ -404,8 +417,8 @@ function drawPies(tdata,isTreeid){
             rm_staff1.remove();
             rm_staff2.remove();
             loadData();
-            render_view1(original_index(data));
-            draw_some(original_index(data));
+            render_view1(original_index([]));
+            draw_some(original_index([]));
             })
     arcs_con.append("text")
         .attr("class","cont")
