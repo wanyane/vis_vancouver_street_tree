@@ -241,6 +241,51 @@ function render_tree(g, data_normal_view, data_bar, leafs_lowest){
         .attr("fill", "#FFFFFF")
         .attr('opacity', 0)
         .text("Asia: " + 10 + "na: ")
+
+    label_data = [
+        {
+            "y": 410,
+            "color": c_yellow,
+            "continent": "Asia"
+        },
+        {
+            "y": 460,
+            "color": c_cyan,
+            "continent": "Europe"
+        },
+        {
+            "y": 510,
+            "color": c_blue,
+            "continent": "North America"
+        },
+        {
+            "y": 560,
+            "color": c_red,
+            "continent": "South America"
+        },
+        {
+            "y": 610,
+            "color": c_purple,
+            "continent": "Africa"
+        }
+    ]
+    label_rect = g.selectAll().data(label_data).enter().append("rect")
+    label_rect
+        .attr('x', 300)
+        .attr('y',(d)=>d.y)
+        .attr('width', 30)
+        .attr('height', 30)
+        .attr('rx', 5)
+        .attr('ry', 5)
+        .style('fill', (d)=>d.color)
+    label_txt = g.selectAll().data(label_data).enter().append("text")
+    label_txt
+        .attr('x', 350)
+        .attr('y',(d)=>d.y+20)
+        .attr('fill', "#FFFFFF")
+        .text((d)=>d.continent)
+
+    
 }
 
 function get_trunk_data(display_data, data_normal_view){
