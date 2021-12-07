@@ -20,7 +20,7 @@ function loadData(){
     drawPies(data,isTreeid);
 }
 function reloaddata(sent_data){
-    console.log(sent_data);
+    // console.log(sent_data);
     if (sent_data.length == 0){
       var rm_staff1=d3.select("#vis1").selectAll("g");
       var rm_staff2=d3.select("#vis2").selectAll("g");
@@ -201,9 +201,47 @@ function drawPies(tdata,isTreeid){
         .innerRadius(0)
         .outerRadius(0)
     var listr=Object.keys(rpiedict);
+    var dataset=new Array(0);
 
+    var rtp=Object.keys(piedict);
+    for(var tmp=0;tmp<rtp.length;tmp++){
+        dataset.push(1);
+    }
+    var rtp_fn= {"B":"Behind Sidewalk","C": "Cutout","G": "In Tree Grate","N":"No Sidewalk","W":"Boulevard","O":"Other"};
+    // for (var i=0; i<)
+    // console.log(rtp);
+    var rects=svg.selectAll("rect")
+        .data(dataset)
+        .enter()
+        .append("rect")
+        // .attr("transform","translate("+ 0 + ","+ 30 +")");
+    rects
+        .attr("x",480)
+        .attr("y",function(d,i){
+            return -25+i*-30;
+        })
+        .attr("width",function(d){
+            return 50;
+        })
+        .attr("height",20)
+        .attr("fill",function(d,i){
+            return color(i)
+        });
+    var rectstxt=svg.selectAll("recttxt")
+        .data(dataset)
+        .enter()
+        .append("text")
+    // .attr("transform","translate("+ 0 + ","+ 30 +")");
+    rectstxt
+        .attr("x",535)
+        .attr("y",function(d,i){
+            return -5+i*-30;
+        })
+        .attr("fill","#FFFFFF")
+        .text(function(d,i){
+            return rtp_fn[rtp[i]];
+        });
     var arcs = svg.selectAll("g")
-
         .data(piedata)
         .enter()
         .append("g")
@@ -246,7 +284,7 @@ function drawPies(tdata,isTreeid){
             let this_group = d3.select(this);
             var labelr=this_group.attr("selector");
             glo_para=piedata_transfer[labelr];
-            console.log(glo_para);
+            // console.log(glo_para);
             draw_some(glo_para);
             render_view1(glo_para);
             var class1="."+labelr+"1";
@@ -270,7 +308,7 @@ function drawPies(tdata,isTreeid){
                     .attr("transform","translate("+ (width/2) + ","+ (width/2) +")");
                 var arc4 = d3.arc()
                     .innerRadius(outerRadius)
-                    .outerRadius(outerRadius + 50);
+                    .outerRadius(outerRadius + 30);
                 garcs.append("path")
                     .attr("class","temp")
                     .attr("fill", function(d,i){
@@ -293,8 +331,8 @@ function drawPies(tdata,isTreeid){
                 garcs.append("text")
                     .attr("class","temp")
                     .attr("transform",function(d,i){
-                        var x = arc.centroid(d)[0]*2.8;
-                        var y = arc.centroid(d)[1]*2.8;
+                        var x = arc.centroid(d)[0]*2.6;
+                        var y = arc.centroid(d)[1]*2.6;
                         return "translate(" + x + ',' + y + ")"+"rotate("+(-90+(d.startAngle +(d.endAngle - d.startAngle)/2)*180 /Math.PI)+ ")";
                     })
                     .attr("text-anchor","middle")
@@ -379,7 +417,7 @@ function drawPies(tdata,isTreeid){
                     })
                     .style("opacity", 1)
                     .text(function (d) {
-                        return labelr;
+                        return "";
                     });
             }
         });
@@ -395,7 +433,7 @@ function drawPies(tdata,isTreeid){
         .attr("text-anchor","middle")
         .attr("fill","white")
         .text(function(d,i){
-            return listr[i];
+            return "";
         });
 
     let csvg = d3.select("#vis2");
@@ -426,14 +464,14 @@ function drawPies(tdata,isTreeid){
     arcs_con.append("text")
         .attr("class","cont")
         .attr("transform",function(d,i){
-            var x = arc.centroid(d)[0]*2.8;
-            var y = arc.centroid(d)[1]*2.8;
-            return "translate(" + x + ',' + y + ")"+"rotate("+(-90+(d.startAngle +(d.endAngle - d.startAngle)/2)*180 /Math.PI)+ ")";
+            var x = arc.centroid(d)[0]*2.6;
+            var y = arc.centroid(d)[1]*(2.4+(Math.pow(-1,i)*0.1));
+            return "translate(" + x + ',' + y + ")";
         })
         .attr("text-anchor","middle")
         .attr("fill","white")
         .text(function(d,i){
-            return ctp[i];
+            return ((cpiedict[ctp[i]]/newdata.length)*100).toFixed(2)+"%";
         });
 }
 loadData();
