@@ -24,15 +24,23 @@ function reloaddata(sent_data){
     if (sent_data.length == 0){
       var rm_staff1=d3.select("#vis1").selectAll("g");
       var rm_staff2=d3.select("#vis2").selectAll("g");
+      var rm_staff3=d3.select("#vis1").selectAll(".r");
+      var rm_staff4=d3.select("#vis1").selectAll(".rt");
       rm_staff1.remove();
       rm_staff2.remove();
+      rm_staff3.remove();
+      rm_staff4.remove();
       loadData();
       return;
     }
     var rm_staff1=d3.select("#vis1").selectAll("g");
     var rm_staff2=d3.select("#vis2").selectAll("g");
+    var rm_staff3=d3.select("#vis1").selectAll(".r");
+    var rm_staff4=d3.select("#vis1").selectAll(".rt");
     rm_staff1.remove();
     rm_staff2.remove();
+    rm_staff3.remove();
+    rm_staff4.remove();
     drawPies(sent_data,true);
 }
 
@@ -216,6 +224,7 @@ function drawPies(tdata,isTreeid){
         .append("rect")
         // .attr("transform","translate("+ 0 + ","+ 30 +")");
     rects
+        .attr("class","r")
         .attr("x",480)
         .attr("y",function(d,i){
             return -25+i*-30;
@@ -233,6 +242,7 @@ function drawPies(tdata,isTreeid){
         .append("text")
     // .attr("transform","translate("+ 0 + ","+ 30 +")");
     rectstxt
+        .attr("class","rt")
         .attr("x",535)
         .attr("y",function(d,i){
             return -5+i*-30;
@@ -455,8 +465,12 @@ function drawPies(tdata,isTreeid){
         .on("click",function(d,i){
             var rm_staff1=d3.select("#vis1").selectAll("g");
             var rm_staff2=d3.select("#vis2").selectAll("g");
+            var rm_staff3=d3.select("#vis1").selectAll(".r");
+            var rm_staff4=d3.select("#vis1").selectAll(".rt");
             rm_staff1.remove();
             rm_staff2.remove();
+            rm_staff3.remove();
+            rm_staff4.remove();
             loadData();
             render_view1(original_index([]));
             draw_some(original_index([]));
